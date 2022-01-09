@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.ConnectButton = new System.Windows.Forms.Button();
             this.portTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -49,6 +51,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.ConnectionQueue = new System.Windows.Forms.TreeView();
             this.IpAddrBox = new System.Windows.Forms.ComboBox();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -236,8 +239,11 @@
             // ConnectionQueue
             // 
             this.ConnectionQueue.BackColor = System.Drawing.Color.White;
+            this.ConnectionQueue.ImageKey = "connected.png";
+            this.ConnectionQueue.ImageList = this.imageList1;
             this.ConnectionQueue.Location = new System.Drawing.Point(12, 80);
             this.ConnectionQueue.Name = "ConnectionQueue";
+            this.ConnectionQueue.SelectedImageIndex = 0;
             this.ConnectionQueue.Size = new System.Drawing.Size(311, 201);
             this.ConnectionQueue.TabIndex = 19;
             // 
@@ -249,6 +255,12 @@
             this.IpAddrBox.Size = new System.Drawing.Size(183, 21);
             this.IpAddrBox.TabIndex = 23;
             this.IpAddrBox.Text = "127.0.0.1";
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "connected.png");
             // 
             // Form1
             // 
@@ -308,6 +320,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TreeView ConnectionQueue;
         private System.Windows.Forms.ComboBox IpAddrBox;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }
 

