@@ -84,9 +84,9 @@ namespace BackdoorClient
             return server.SendCommandAndGetResponce(comm, maxsize);
         }
 
-        public byte[] SendCommandAndGetBytesResponce(string comm, int maxsize = 10000)
+        public byte[] SendCommandAndGetBytesResponce(string comm)
         {
-            return server.SendCommandAndGetBytesResponce(comm, maxsize);
+            return server.SendCommandAndGetBytesResponce(comm);
         }
 
         public bool TestConnect()

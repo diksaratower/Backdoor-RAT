@@ -38,18 +38,19 @@
             this.startFileBut = new System.Windows.Forms.Button();
             this.resulteText = new System.Windows.Forms.Label();
             this.downloadBut = new System.Windows.Forms.Button();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.contextMenuStrip1.SuspendLayout();
+            this.fileManagmentMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.RefreshtoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToParentFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.downloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileManagmentMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // fidndTaskButton
             // 
-            this.fidndTaskButton.Location = new System.Drawing.Point(264, 14);
+            this.fidndTaskButton.Location = new System.Drawing.Point(335, 13);
             this.fidndTaskButton.Name = "fidndTaskButton";
             this.fidndTaskButton.Size = new System.Drawing.Size(67, 22);
             this.fidndTaskButton.TabIndex = 12;
@@ -59,14 +60,14 @@
             // 
             this.pathTextBox.Location = new System.Drawing.Point(45, 15);
             this.pathTextBox.Name = "pathTextBox";
-            this.pathTextBox.Size = new System.Drawing.Size(213, 20);
+            this.pathTextBox.Size = new System.Drawing.Size(284, 20);
             this.pathTextBox.TabIndex = 11;
             this.pathTextBox.Text = "c:/";
             // 
             // statsLabel
             // 
             this.statsLabel.AutoSize = true;
-            this.statsLabel.Location = new System.Drawing.Point(374, 23);
+            this.statsLabel.Location = new System.Drawing.Point(458, 32);
             this.statsLabel.Name = "statsLabel";
             this.statsLabel.Size = new System.Drawing.Size(54, 13);
             this.statsLabel.TabIndex = 10;
@@ -74,7 +75,7 @@
             // 
             // refreshFilesBut
             // 
-            this.refreshFilesBut.Location = new System.Drawing.Point(377, 219);
+            this.refreshFilesBut.Location = new System.Drawing.Point(461, 228);
             this.refreshFilesBut.Name = "refreshFilesBut";
             this.refreshFilesBut.Size = new System.Drawing.Size(119, 26);
             this.refreshFilesBut.TabIndex = 9;
@@ -84,7 +85,7 @@
             // 
             // removeFileButton
             // 
-            this.removeFileButton.Location = new System.Drawing.Point(377, 283);
+            this.removeFileButton.Location = new System.Drawing.Point(461, 292);
             this.removeFileButton.Name = "removeFileButton";
             this.removeFileButton.Size = new System.Drawing.Size(119, 27);
             this.removeFileButton.TabIndex = 8;
@@ -94,14 +95,15 @@
             // 
             // filesView
             // 
+            this.filesView.ContextMenuStrip = this.fileManagmentMenu;
             this.filesView.Location = new System.Drawing.Point(45, 44);
             this.filesView.Name = "filesView";
-            this.filesView.Size = new System.Drawing.Size(286, 266);
+            this.filesView.Size = new System.Drawing.Size(357, 275);
             this.filesView.TabIndex = 7;
             // 
             // startFileBut
             // 
-            this.startFileBut.Location = new System.Drawing.Point(377, 251);
+            this.startFileBut.Location = new System.Drawing.Point(461, 260);
             this.startFileBut.Name = "startFileBut";
             this.startFileBut.Size = new System.Drawing.Size(119, 26);
             this.startFileBut.TabIndex = 13;
@@ -112,14 +114,14 @@
             // resulteText
             // 
             this.resulteText.AutoSize = true;
-            this.resulteText.Location = new System.Drawing.Point(374, 57);
+            this.resulteText.Location = new System.Drawing.Point(458, 66);
             this.resulteText.Name = "resulteText";
             this.resulteText.Size = new System.Drawing.Size(0, 13);
             this.resulteText.TabIndex = 14;
             // 
             // downloadBut
             // 
-            this.downloadBut.Location = new System.Drawing.Point(377, 187);
+            this.downloadBut.Location = new System.Drawing.Point(461, 196);
             this.downloadBut.Name = "downloadBut";
             this.downloadBut.Size = new System.Drawing.Size(119, 26);
             this.downloadBut.TabIndex = 15;
@@ -127,51 +129,64 @@
             this.downloadBut.UseVisualStyleBackColor = true;
             this.downloadBut.Click += new System.EventHandler(this.downloadBut_Click);
             // 
-            // contextMenuStrip1
+            // fileManagmentMenu
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4,
-            this.toolStripSeparator1});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
+            this.fileManagmentMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RefreshtoolStripMenuItem,
+            this.goToFolderToolStripMenuItem,
+            this.goToParentFolderToolStripMenuItem,
+            this.downloadToolStripMenuItem,
+            this.deleteToolStripMenuItem,
+            this.startToolStripMenuItem});
+            this.fileManagmentMenu.Name = "fileManagmentMenu";
+            this.fileManagmentMenu.Size = new System.Drawing.Size(176, 136);
+            this.fileManagmentMenu.Opening += new System.ComponentModel.CancelEventHandler(this.fileManagmentMenu_Opening);
             // 
-            // toolStripMenuItem1
+            // RefreshtoolStripMenuItem
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem1.Text = "toolStripMenuItem1";
+            this.RefreshtoolStripMenuItem.Name = "RefreshtoolStripMenuItem";
+            this.RefreshtoolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RefreshtoolStripMenuItem.Text = "Обновить";
+            this.RefreshtoolStripMenuItem.Click += new System.EventHandler(this.RefreshtoolStripMenuItem_Click);
             // 
-            // toolStripMenuItem2
+            // goToFolderToolStripMenuItem
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem2.Text = "toolStripMenuItem2";
+            this.goToFolderToolStripMenuItem.Name = "goToFolderToolStripMenuItem";
+            this.goToFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.goToFolderToolStripMenuItem.Text = "Перейти в папку";
+            this.goToFolderToolStripMenuItem.Click += new System.EventHandler(this.goToFolderToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem3
+            // goToParentFolderToolStripMenuItem
             // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem3.Text = "toolStripMenuItem3";
+            this.goToParentFolderToolStripMenuItem.Name = "goToParentFolderToolStripMenuItem";
+            this.goToParentFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.goToParentFolderToolStripMenuItem.Text = "Перейти в р.папку";
+            this.goToParentFolderToolStripMenuItem.Click += new System.EventHandler(this.goToParentFolderToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem4
+            // downloadToolStripMenuItem
             // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem4.Text = "toolStripMenuItem4";
+            this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
+            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.downloadToolStripMenuItem.Text = "Скачать";
             // 
-            // toolStripSeparator1
+            // deleteToolStripMenuItem
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem.Text = "Удалить";
+            // 
+            // startToolStripMenuItem
+            // 
+            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.startToolStripMenuItem.Text = "Запустить";
+            this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // FileManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(541, 325);
+            this.ClientSize = new System.Drawing.Size(624, 350);
             this.Controls.Add(this.downloadBut);
             this.Controls.Add(this.resulteText);
             this.Controls.Add(this.startFileBut);
@@ -184,7 +199,7 @@
             this.Name = "FileManager";
             this.Text = "FileManager";
             this.Load += new System.EventHandler(this.FileManager_Load);
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.fileManagmentMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -201,11 +216,12 @@
         private System.Windows.Forms.Button startFileBut;
         private System.Windows.Forms.Label resulteText;
         private System.Windows.Forms.Button downloadBut;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ContextMenuStrip fileManagmentMenu;
+        private System.Windows.Forms.ToolStripMenuItem RefreshtoolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem goToFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem goToParentFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
     }
 }

